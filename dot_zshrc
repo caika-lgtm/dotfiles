@@ -20,15 +20,18 @@ source $ZSH/oh-my-zsh.sh
 
 export PATH=$HOME/go/bin:$PATH
 export PATH="$PATH:/Users/SG3937/.local/bin"
-alias l="ls -la"
+# alias l="ls -la"
+alias l='eza -lab --icons=auto --group-directories-first --smart-group --git --git-repos'
+alias lt='eza -lab --icons=auto --group-directories-first --smart-group --git --git-repos -T -L 2'
+alias lt='eza -lab --icons=auto --group-directories-first --smart-group --git --git-repos -T -L 3'
 alias nap="EDITOR=vim nap"
 alias checkout='fzf-git-checkout && g pull'
-cd ~/code
 # emodipt-extend, kali, stelbent.minimal
 eval "$(oh-my-posh init zsh --config ~/.mytheme.omp.json)"
 
 zvm_after_init_commands+=('[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh')
 
+export FZF_PREVIEW_ADVANCED=1
 export FZF_PREVIEW_COMMAND="bat --style=numbers,changes --wrap never --color always {} || cat {} || tree -C {}"
 export FZF_COMMON_OPTIONS="
   --bind='?:toggle-preview'
@@ -98,3 +101,5 @@ crefactor() {
 alias gca='rundev git commit --verbose --all --date=now --no-edit --amend'
 alias pre="rundev 'poetry run mycli -h infra_center_db -P 3306 -u root -proot -e \"drop database infra_center_db; create database infra_center_db\" && poetry run alembic upgrade head'"
 
+export LESSOPEN="|/opt/homebrew/bin/lesspipe.sh %s"
+alias editzshrc='chezmoi edit ~/.zshrc'
