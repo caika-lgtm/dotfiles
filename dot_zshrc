@@ -24,7 +24,8 @@ export PATH="$PATH:/Users/SG3937/.local/bin"
 alias l='eza -lab --icons=auto --group-directories-first --smart-group --git --git-repos'
 alias lt='eza -lab --icons=auto --group-directories-first --smart-group --git --git-repos -T -L 2'
 alias lt='eza -lab --icons=auto --group-directories-first --smart-group --git --git-repos -T -L 3'
-alias nap="EDITOR=vim nap"
+export EDITOR='nvim'
+# alias nap="EDITOR=nvim nap"
 alias checkout='fzf-git-checkout && g pull'
 # emodipt-extend, kali, stelbent.minimal
 eval "$(oh-my-posh init zsh --config ~/.mytheme.omp.json)"
@@ -79,7 +80,8 @@ devc() {
 
     local formatted_message="$type: [$ticket_id] $message"
     echo "🎉 Committing with message: \"$formatted_message\""
-    rundev git commit --verbose -m "'$formatted_message'"
+    # rundev git commit --verbose -m "'$formatted_message'"
+    git commit --verbose -m "$formatted_message"
 }
 
 cfeat() {
@@ -98,8 +100,20 @@ crefactor() {
     devc "refactor" "$1"
 }
 
-alias gca='rundev git commit --verbose --all --date=now --no-edit --amend'
+# alias gca='rundev git commit --verbose --all --date=now --no-edit --amend'
+alias gca='git commit --verbose --all --date=now --no-edit --amend'
 alias pre="rundev 'poetry run mycli -h infra_center_db -P 3306 -u root -proot -e \"drop database infra_center_db; create database infra_center_db\" && poetry run alembic upgrade head'"
 
 export LESSOPEN="|/opt/homebrew/bin/lesspipe.sh %s"
-alias editzshrc='chezmoi edit ~/.zshrc'
+alias editzshrc='chezmoi edit ~/.zshrc && chezmoi apply'
+alias vim='nvim'
+
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+eval "$(pyenv init -)" 
+
+export NAP_CONFIG="~/.nap/config.yaml"
+export NAP_HOME="~/.nap"
+
+unalias gg 2>/dev/null
