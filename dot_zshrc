@@ -148,6 +148,110 @@ mr_view() {
   glab mr view "${1:-$(g branch --show-current)}" -w
 }
 
+mr_rebase() {
+  local branch
+  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
+  if [[ -z "$branch" || "$branch" == "HEAD" ]]; then
+    echo "mr_rebase: not on a branch" >&2
+    return 1
+  fi
+  glab mr rebase "$branch"
+}
+
+mr_target() {
+  local current_branch target_branch
+  current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
+  if [[ -z "$current_branch" || "$current_branch" == "HEAD" ]]; then
+    echo "mr_target: not on a branch" >&2
+    return 1
+  fi
+
+  target_branch="$(
+    git for-each-ref --format='%(refname:short)' refs/heads/ \
+      | fzf --prompt="Target branch > " --height=40% --layout=reverse --border
+  )" || return 1
+
+  if [[ -z "$target_branch" ]]; then
+    echo "mr_target: no target branch selected" >&2
+    return 1
+  fi
+
+  glab mr update "$current_branch" --target-branch "$target_branch"
+}
+
+ci_status_short() {
+    local branch="$1"
+    if [[ -z "$branch" ]]; then
+      echo "usage: ci_status_short <branch>"
+      return 1
+    fi
+
+    local output pipe_status stages red reset
+    red=$'\e[31m'
+    reset=$'\e[0m'
+
+    output="$(glab ci get -b "$branch" -d 2>/dev/null)" || {
+      echo "🔍"
+      return 1
+    }
+
+    pipe_status="$(printf "%s\n" "$output" | awk -F: '/^status:/ {gsub(/^[ \t]+/, "", $2); print $2; exit}')"
+
+    if [[ "$pipe_status" == "failed" ]]; then
+      stages=("${(@f)$(printf "%s\n" "$output" \
+        | awk '
+            BEGIN {in_jobs=0}
+            /^# Jobs:/ {in_jobs=1; next}
+            in_jobs && /^ID[[:space:]]+Name/ {next}
+            in_jobs {
+              for (i=1; i<=NF; i++) {
+                if ($i ~ /^(failed|success|skipped|running|pending)$/) {
+                  status_text=$i
+                  name=""
+                  for (j=2; j<i; j++) {
+                    name = name (j==2 ? "" : " ") $j
+                  }
+                  if (status_text=="failed") {
+                    sub(/:.*/, "", name)
+                    print name
+                  }
+                  break
+                }
+              }
+            }' \
+        | awk '!seen[$0]++'
+      )}")
+
+    if (( ${#stages[@]} > 0 )); then
+      echo "${red}👎 (${(j:, :)stages})${reset}"
+    else
+      echo "${red}👎${reset}"
+    fi
+    elif [[ "$pipe_status" == "success" ]]; then
+      echo "🎉"
+    elif [[ "$pipe_status" == "pending" ]]; then
+      echo "🙏"
+    elif [[ "$pipe_status" == "running" ]]; then
+      echo "🏃"
+    elif [[ "$pipe_status" == "canceled" ]]; then
+      echo "🚫"
+    elif [[ "$pipe_status" == "skipped" ]]; then
+      echo "⏭️"
+    elif [[ "$pipe_status" == "created" ]]; then
+      echo "🚧"
+    elif [[ "$pipe_status" == "manual" ]]; then
+      echo "📝"
+    elif [[ "$pipe_status" == "waiting_for_resource" ]]; then
+      echo "💤"
+    elif [[ "$pipe_status" == "preparing" ]]; then
+      echo "⏳"
+    elif [[ "$pipe_status" == "scheduled" ]]; then
+      echo "📅"
+    else
+      echo "❓"
+    fi
+  }
+
 mrs() {
     local jq_filter
     jq_filter='
@@ -170,9 +274,17 @@ mrs() {
       ] | @tsv
     '
       local awk_fmt
-      awk_fmt='
+    awk_fmt='
+      function strip_ansi(s, t) {
+        t = s
+        gsub(/\033\[[0-9;]*m/, "", t)
+        return t
+      }
+      function vislen(s) {
+        return length(strip_ansi(s))
+      }
       function pad(s, w) {
-        padlen = w - length(s)
+        padlen = w - vislen(s)
         if (padlen < 0) padlen = 0
         padstr = sprintf("%*s", padlen, "")
         gsub(/ /, ".", padstr)
@@ -191,18 +303,20 @@ mrs() {
         label=f[4]
         status=f[5]
         state=f[6]
-        updated=f[7]
+        pipe=f[7]
+        updated=f[8]
         status_state = state " (" status ")"
 
-        r1[NR]=iid; r2[NR]=src; r3[NR]=tgt; r4[NR]=label; r5[NR]=status_state; r6[NR]=updated
+        r1[NR]=iid; r2[NR]=src; r3[NR]=tgt; r4[NR]=label; r5[NR]=status_state; r6[NR]=pipe; r7[NR]=updated
         s5[NR]=status; s6[NR]=state; lab[NR]=label
 
-        if (length(r1[NR])>w[1]) w[1]=length(r1[NR])
-        if (length(r2[NR])>w[2]) w[2]=length(r2[NR])
-        if (length(r3[NR])>w[3]) w[3]=length(r3[NR])
-        if (length(r4[NR])>w[4]) w[4]=length(r4[NR])
-        if (length(r5[NR])>w[5]) w[5]=length(r5[NR])
-        if (length(r6[NR])>w[6]) w[6]=length(r6[NR])
+        if (vislen(r1[NR])>w[1]) w[1]=vislen(r1[NR])
+        if (vislen(r2[NR])>w[2]) w[2]=vislen(r2[NR])
+        if (vislen(r3[NR])>w[3]) w[3]=vislen(r3[NR])
+        if (vislen(r4[NR])>w[4]) w[4]=vislen(r4[NR])
+        if (vislen(r5[NR])>w[5]) w[5]=vislen(r5[NR])
+        if (vislen(r6[NR])>w[6]) w[6]=vislen(r6[NR])
+        if (vislen(r7[NR])>w[7]) w[7]=vislen(r7[NR])
       }
       END {
         ORANGE="\033[38;5;208m"
@@ -211,7 +325,7 @@ mrs() {
         PURPLE="\033[0;35m"
         GRAY="\033[0;90m"
         RESET="\033[0m"
-      
+
         sep_done=0
         for (r=1;r<=NR;r++) {
           label_color = (lab[r] ~ /WaitingForImprovement/) ? "\033[0;31m" : "\033[0;32m"
@@ -224,18 +338,19 @@ mrs() {
           if (state == "merged") status_color=GRAY
 
           if (state == "merged" && !sep_done) {
-            width = w[1]+1 + w[2] + w[3] + w[4] + w[5] + w[6] + 5
+            width = w[1]+1 + w[2] + w[3] + w[4] + w[5] + w[6] + w[7] + 6
             printf "%s%s%s\n", GRAY, ruler(width, "-"), RESET
             sep_done=1
           }
 
-          printf "\033[0;37m%s\033[0m \033[0;33m%s\033[0m %s%s\033[0m %s%s\033[0m %s%s\033[0m %s%s\033[0m\n",
+          printf "\033[0;37m%s\033[0m \033[0;33m%s\033[0m %s%s\033[0m %s%s\033[0m %s%s\033[0m %s%s\033[0m %s%s\033[0m\n",
             pad(r1[r], w[1]+1),
             pad(r2[r], w[2]),
             PURPLE, pad(r3[r], w[3]),
             label_color, pad(r4[r], w[4]),
             status_color, pad(r5[r], w[5]),
-            WHITE, pad(r6[r], w[6])
+            WHITE, pad(r6[r], w[6]),
+            WHITE, pad(r7[r], w[7])
         }
       }
       '
@@ -253,11 +368,25 @@ mrs() {
     if (( all )); then
       jq -s '.[0] + .[1]' \
         <(glab mr list --author @me -F json -o updated_at -S desc "${args[@]}") \
-        <(glab mr list --author @me -F json -o updated_at -S desc -M "${args[@]}") \
-      | jq -r "$jq_filter" | awk -F '\t' "$awk_fmt"
+        <(glab mr list --author @me -F json -o updated_at -S desc -M -P 10 "${args[@]}") \
+      | jq -r "$jq_filter" \
+      | {
+          while IFS=$'\t' read -r iid src tgt label merge_status state updated; do
+            pipe=$(ci_status_short "$src")
+            printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+              "$iid" "$src" "$tgt" "$label" "$merge_status" "$state" "$pipe" "$updated"
+          done
+        } | awk -F $'\t' "$awk_fmt"
     else
       glab mr list --author @me -F json -o updated_at -S desc "${args[@]}" \
-      | jq -r "$jq_filter" | awk -F '\t' "$awk_fmt"
+      | jq -r "$jq_filter" \
+      | {
+          while IFS=$'\t' read -r iid src tgt label merge_status state updated; do
+            pipe=$(ci_status_short "$src")
+            printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+              "$iid" "$src" "$tgt" "$label" "$merge_status" "$state" "$pipe" "$updated"
+          done
+        } | awk -F $'\t' "$awk_fmt"
     fi
   }
 
@@ -473,3 +602,4 @@ ci_trace() {
       }
     ' | bat --pager="less -FR +G"
 }
+
