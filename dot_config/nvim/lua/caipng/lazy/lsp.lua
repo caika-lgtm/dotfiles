@@ -33,7 +33,8 @@ return {
         "ruff",
         "marksman",
         "basedpyright",
-        "taplo"
+        "taplo",
+        "bashls",
       },
       handlers = {
         function(server_name)
@@ -44,6 +45,12 @@ return {
         basedpyright = function()
           require('lspconfig').basedpyright.setup({
             capabilities = capabilities,
+          })
+        end,
+        bashls = function()
+          require('lspconfig').bashls.setup({
+            capabilities = capabilities,
+            filetypes = { "sh", "zsh" },
           })
         end,
         lua_ls = function()
