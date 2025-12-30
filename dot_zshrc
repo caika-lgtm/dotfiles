@@ -117,8 +117,9 @@ export NAP_CONFIG="~/.nap/config.yaml"
 export NAP_HOME="~/.nap"
 
 unalias gg 2>/dev/null
+unalias gl 2>/dev/null
 
-mr_create() {
+mr-create() {
   local target_branch mr_output mr_url
 
   target_branch=$(
@@ -144,11 +145,11 @@ mr_create() {
 }
 
 
-mr_view() {
+mr-view() {
   glab mr view "${1:-$(g branch --show-current)}" -w
 }
 
-mr_rebase() {
+mr-rebase() {
   local branch
   branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
   if [[ -z "$branch" || "$branch" == "HEAD" ]]; then
@@ -158,7 +159,7 @@ mr_rebase() {
   glab mr rebase "$branch"
 }
 
-mr_target() {
+mr-target() {
   local current_branch target_branch
   current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
   if [[ -z "$current_branch" || "$current_branch" == "HEAD" ]]; then
@@ -179,10 +180,10 @@ mr_target() {
   glab mr update "$current_branch" --target-branch "$target_branch"
 }
 
-ci_status_short() {
+ci-status-short() {
     local branch="$1"
     if [[ -z "$branch" ]]; then
-      echo "usage: ci_status_short <branch>"
+      echo "usage: ci-status-short <branch>"
       return 1
     fi
 
@@ -372,7 +373,7 @@ mrs() {
       | jq -r "$jq_filter" \
       | {
           while IFS=$'\t' read -r iid src tgt label merge_status state updated; do
-            pipe=$(ci_status_short "$src")
+            pipe=$(ci-status-short "$src")
             printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
               "$iid" "$src" "$tgt" "$label" "$merge_status" "$state" "$pipe" "$updated"
           done
@@ -382,7 +383,7 @@ mrs() {
       | jq -r "$jq_filter" \
       | {
           while IFS=$'\t' read -r iid src tgt label merge_status state updated; do
-            pipe=$(ci_status_short "$src")
+            pipe=$(ci-status-short "$src")
             printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
               "$iid" "$src" "$tgt" "$label" "$merge_status" "$state" "$pipe" "$updated"
           done
@@ -561,13 +562,13 @@ _ci_status_for_branch() {
   }
 
 
-ci_status() {
+ci-status() {
   local branch
   branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
   _ci_status_for_branch "$branch"
 }
 
-ci_status_for() {
+ci-status-for() {
   local branch
   branch="$(
     git for-each-ref --format='%(refname:short)' refs/heads refs/remotes \
@@ -579,7 +580,7 @@ ci_status_for() {
     _ci_status_for_branch "$branch"
   }
 
-ci_trace() {
+ci-trace() {
   local job_id="$1"
   [[ -n "$job_id" ]] || { print -r -- "usage: ci_trace <job_id>"; return 1; }
 
@@ -603,3 +604,35 @@ ci_trace() {
     ' | bat --pager="less -FR +G"
 }
 
+alias dsf='diff-so-fancy'
+
+gl() {
+    if [[ $# -eq 0 ]]; then
+      git log --shortstat --color=always --pretty=format:'%s%n%C(red)%h%C(reset) %C(auto)%d%C(reset)' -10
+    else
+      git log --shortstat --color=always --pretty=format:'%s%n%C(red)%h%C(reset) %C(auto)%d%C(reset)' "$@"
+    fi
+  }
+
+view-commit() {
+    local sha="$1"
+    if [[ -z "$sha" ]]; then
+      echo "usage: view_commit <sha>"
+      return 1
+    fi
+    local url="https://git.insea.io/harbor.insea.io/seaweb/infracenter-be/-/commits/${sha}"
+    printf "%s" "$url" | pbcopy
+    open "$url"
+  }
+
+view-jira() {
+    local id="$1"
+    if [[ -z "$id" ]]; then
+      echo "usage: view-jira <ticket id>"
+      return 1
+    fi
+    id="${id#MIS-}"
+    local url="https://jira.garenanow.com/browse/MIS-${id}"
+    printf "%s" "$url" | pbcopy
+    open "$url"
+  }
