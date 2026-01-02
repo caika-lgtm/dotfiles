@@ -46,12 +46,25 @@ which_key.add({
     desc = "Search and replace word under cursor",
   },
 
-  { "J",     "mzJ`z",   desc = "Join lines and keep cursor position" },
-  { "<C-d>", "<C-d>zz", desc = "Half page down and center" },
-  { "<C-u>", "<C-u>zz", desc = "Half page up and center" },
-  { "n",     "nzzzv",   desc = "Next search result and center" },
-  { "N",     "Nzzzv",   desc = "Previous search result and center" },
-  { "Q",     "<nop>",   desc = "Disable Ex mode" },
+  { "J",     "mzJ`z",                                      desc = "Join lines and keep cursor position" },
+  { "<C-d>", "<C-d>zz",                                    desc = "Half page down and center" },
+  { "<C-u>", "<C-u>zz",                                    desc = "Half page up and center" },
+  { "n",     "nzzzv",                                      desc = "Next search result and center" },
+  { "N",     "Nzzzv",                                      desc = "Previous search result and center" },
+  { "Q",     "<nop>",                                      desc = "Disable Ex mode" },
+
+  { "vs",    '<cmd>vsplit | wincmd p | b# | wincmd p<CR>', desc = "Vertical Split",                     silent = true },
+  { "hs",    '<cmd>split | wincmd p | b# | wincmd p<CR>',  desc = "Horizontal Split",                   silent = true },
+  { "z0",    "<cmd>set foldlevel=0<cr>",                   desc = "Fold all" },
+  { "z1",    "<cmd>set foldlevel=1<cr>",                   desc = "Fold level 1" },
+  { "z2",    "<cmd>set foldlevel=2<cr>",                   desc = "Fold level 2" },
+  { "z3",    "<cmd>set foldlevel=3<cr>",                   desc = "Fold level 3" },
+  { "z4",    "<cmd>set foldlevel=4<cr>",                   desc = "Fold level 4" },
+  { "z5",    "<cmd>set foldlevel=5<cr>",                   desc = "Fold level 5" },
+  { "z6",    "<cmd>set foldlevel=6<cr>",                   desc = "Fold level 6" },
+  { "z7",    "<cmd>set foldlevel=7<cr>",                   desc = "Fold level 7" },
+  { "z8",    "<cmd>set foldlevel=8<cr>",                   desc = "Fold level 8" },
+  { "z9",    "<cmd>set foldlevel=9<cr>",                   desc = "Fold level 9" },
 })
 
 -- Telescope
@@ -175,37 +188,34 @@ which_key.add({
   { "<leader>9", "<cmd>BufferLineGoToBuffer 9<CR>", desc = "Go to buffer 9" },
 })
 
-local map = vim.keymap.set
+-- from LazyVim
+which_key.add({
+  { "j",         "v:count == 0 ? 'gj' : 'j'",   desc = "Down",                   expr = true,                  silent = true,      mode = { "n", "x" } },
+  { "<Down>",    "v:count == 0 ? 'gj' : 'j'",   desc = "Down",                   expr = true,                  silent = true,      mode = { "n", "x" } },
+  { "k",         "v:count == 0 ? 'gk' : 'k'",   desc = "Up",                     expr = true,                  silent = true,      mode = { "n", "x" } },
+  { "<Up>",      "v:count == 0 ? 'gk' : 'k'",   desc = "Up",                     expr = true,                  silent = true,      mode = { "n", "x" } },
 
--- better up/down
-map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
-map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
-map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
-map({ "n", "x" }, "<Up>", "v:count == 0 ? 'gk' : 'k'", { desc = "Up", expr = true, silent = true })
+  { "<C-h>",     "<C-w>h",                      desc = "Go to Left Window",      remap = true,                 mode = "n" },
+  { "<Left>",    "<C-w>h",                      desc = "Go to Left Window",      remap = true,                 mode = "n" },
+  { "<C-j>",     "<C-w>j",                      desc = "Go to Lower Window",     remap = true,                 mode = "n" },
+  { "<Down>",    "<C-w>j",                      desc = "Go to Lower Window",     remap = true,                 mode = "n" },
+  { "<C-k>",     "<C-w>k",                      desc = "Go to Upper Window",     remap = true,                 mode = "n" },
+  { "<Up>",      "<C-w>k",                      desc = "Go to Upper Window",     remap = true,                 mode = "n" },
+  { "<C-l>",     "<C-w>l",                      desc = "Go to Right Window",     remap = true,                 mode = "n" },
+  { "<Right>",   "<C-w>l",                      desc = "Go to Right Window",     remap = true,                 mode = "n" },
 
--- Move to window using the <ctrl> hjkl keys
-map("n", "<C-h>", "<C-w>h", { desc = "Go to Left Window", remap = true })
-map("n", "<C-j>", "<C-w>j", { desc = "Go to Lower Window", remap = true })
-map("n", "<C-k>", "<C-w>k", { desc = "Go to Upper Window", remap = true })
-map("n", "<C-l>", "<C-w>l", { desc = "Go to Right Window", remap = true })
+  { "<M-Down>",  "<cmd>resize +2<cr>",          desc = "Increase Window Height", mode = "n" },
+  { "<M-Up>",    "<cmd>resize -2<cr>",          desc = "Decrease Window Height", mode = "n" },
+  { "<M-Right>", "<cmd>vertical resize -2<cr>", desc = "Decrease Window Width",  mode = "n" },
+  { "<M-Left>",  "<cmd>vertical resize +2<cr>", desc = "Increase Window Width",  mode = "n" },
 
--- Resize window using <ctrl> arrow keys
-map("n", "<C-Up>", "<cmd>resize +2<cr>", { desc = "Increase Window Height" })
-map("n", "<C-Down>", "<cmd>resize -2<cr>", { desc = "Decrease Window Height" })
-map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease Window Width" })
-map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase Window Width" })
+  { "n",         "'Nn'[v:searchforward].'zv'",  expr = true,                     desc = "Next Search Result",  mode = "n" },
+  { "n",         "'Nn'[v:searchforward]",       expr = true,                     desc = "Next Search Result",  mode = { "x", "o" } },
+  { "N",         "'nN'[v:searchforward].'zv'",  expr = true,                     desc = "Prev Search Result",  mode = "n" },
+  { "N",         "'nN'[v:searchforward]",       expr = true,                     desc = "Prev Search Result",  mode = { "x", "o" } },
 
--- https://github.com/mhinz/vim-galore#saner-behavior-of-n-and-n
-map("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true, desc = "Next Search Result" })
-map("x", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next Search Result" })
-map("o", "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next Search Result" })
-map("n", "N", "'nN'[v:searchforward].'zv'", { expr = true, desc = "Prev Search Result" })
-map("x", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev Search Result" })
-map("o", "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev Search Result" })
+  { "<C-s>",     "<cmd>w<cr><esc>",             desc = "Save File",              mode = { "i", "x", "n", "s" } },
 
--- save file
-map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save File" })
-
--- better indenting
-map("x", "<", "<gv")
-map("x", ">", ">gv")
+  { "<",         "<gv",                         desc = "Indent Left",            mode = "x" },
+  { ">",         ">gv",                         desc = "Indent Right",           mode = "x" },
+})

@@ -23,6 +23,8 @@ export PATH="$PATH:/Users/SG3937/.local/bin"
 
 unalias gg 2>/dev/null
 unalias gl 2>/dev/null
+unalias gr 2>/dev/null
+unalias grs 2>/dev/null
 unalias l 2>/dev/null
 
 # alias l="ls -la"
@@ -46,6 +48,9 @@ lHtt() { eza_base -lb -T -L 3 --git-ignore "$@"; }
 li()   { eza_base -la --git-ignore "$@"; }
 lit()  { eza_base -la -T -L 2 --git-ignore "$@"; }
 litt() { eza_base -la -T -L 3 --git-ignore "$@"; }
+
+alias gr="git restore ."
+alias grs="git restore --staged ."
 
 
 export EDITOR='nvim'
@@ -632,9 +637,9 @@ dsf() {
 
 gl() {
     if [[ $# -eq 0 ]]; then
-      git log --shortstat --color=always --pretty=format:'%s%n%C(red)%h%C(reset) %C(auto)%d%C(reset)' -10
+      git log --color=always --pretty=format:'%s%n%C(red)%h%C(reset) %C(auto)%d%C(reset)%n' -10
     else
-      git log --shortstat --color=always --pretty=format:'%s%n%C(red)%h%C(reset) %C(auto)%d%C(reset)' "$@"
+      git log --color=always --pretty=format:'%s%n%C(red)%h%C(reset) %C(auto)%d%C(reset)%n' "$@"
     fi
   }
 
@@ -662,3 +667,10 @@ view-jira() {
   }
 
 alias cd-downloads='cd ~/Downloads'
+
+test() {
+  local filename="$1"
+  shift
+  local keywords="$*"
+  rundev "poetry run pytest ${filename} -k ${keywords} -vv"
+}
