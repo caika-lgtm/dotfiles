@@ -88,10 +88,29 @@ vim.keymap.set("i", "<Right>", "<Right>", { noremap = true }) -- keep as-is
 --   { "<leader>tc", "<cmd>NvimTreeClose<CR>",    desc = "[C]lose" },
 -- })
 
+local function gitsigns_blame_toggle()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local name = vim.api.nvim_buf_get_name(buf)
+    if name:match("^gitsigns%-blame:") then
+      pcall(vim.api.nvim_win_close, win, true)
+      pcall(vim.api.nvim_buf_delete, buf, { force = true })
+      return
+    end
+  end
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    local name = vim.api.nvim_buf_get_name(buf)
+    if name:match("^gitsigns%-blame:") then
+      pcall(vim.api.nvim_buf_delete, buf, { force = true })
+    end
+  end
+  require("gitsigns").blame()
+end
+
 -- Git
 which_key.add({
   { "<leader>g",   group = "[G]it" },
-  { "<leader>gb",  "<cmd>Gitsigns blame<CR>",                     desc = "[b]lame" },
+  { "<leader>gb",  gitsigns_blame_toggle,                         desc = "[b]lame" },
   { "<leader>gB",  function() Snacks.gitbrowse() end,             desc = "Git Browse",           mode = { "n", "v" } },
   { "<leader>glb", "<cmd>Gitsigns toggle_current_line_blame<CR>", desc = "[L]ine [B]lame" },
   { "<leader>gp",  "<cmd>Gitsigns preview_hunk<CR>",              desc = "[P]review hunk" },
@@ -111,6 +130,8 @@ which_key.add({
   { "<leader>n",       function() Snacks.picker.notifications() end,         desc = "Notification History" },
   { "<leader>:",       function() Snacks.picker.command_history() end,       desc = "Command History" },
   { "<leader>bd",      "<cmd>lua Snacks.bufdelete()<CR>",                    desc = "[B]uffer [D]elete" },
+  { "<leader>bo",      "<cmd>lua Snacks.bufdelete.other()<CR>",              desc = "[B]uffer Delete [O]ther" },
+  { "<leader>ba",      "<cmd>lua Snacks.bufdelete.all()<CR>",                desc = "[B]uffer Delete [A]ll" },
   { "<leader>sgl",     function() Snacks.picker.git_log() end,               desc = "Git Log" },
   { "<leader>sgL",     function() Snacks.picker.git_log_line() end,          desc = "Git Log Line" },
   { "<leader>sgf",     function() Snacks.picker.git_log_file() end,          desc = "Git Log File" },
@@ -132,7 +153,7 @@ which_key.add({
   { "<leader>sS",      function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Workspace Symbols" },
   { "gd",              function() Snacks.picker.lsp_definitions() end,       desc = "Goto Definition" },
   { "gD",              function() Snacks.picker.lsp_declarations() end,      desc = "Goto Declaration" },
-  { "gr",              function() Snacks.picker.lsp_references() end,        nowait = true,                  desc = "References" },
+  { "gr",              function() Snacks.picker.lsp_references() end,        nowait = true,                   desc = "References" },
   { "gi",              function() Snacks.picker.lsp_implementations() end,   desc = "Goto Implementation" },
   { "gy",              function() Snacks.picker.lsp_type_definitions() end,  desc = "Goto T[y]pe Definition" },
   { "gai",             function() Snacks.picker.lsp_incoming_calls() end,    desc = "C[a]lls Incoming" },

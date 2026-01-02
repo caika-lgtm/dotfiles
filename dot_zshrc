@@ -20,10 +20,34 @@ source $ZSH/oh-my-zsh.sh
 
 export PATH=$HOME/go/bin:$PATH
 export PATH="$PATH:/Users/SG3937/.local/bin"
+
+unalias gg 2>/dev/null
+unalias gl 2>/dev/null
+unalias l 2>/dev/null
+
 # alias l="ls -la"
-alias l='eza -lab --icons=auto --group-directories-first --smart-group --git --git-repos'
-alias lt='eza -lab --icons=auto --group-directories-first --smart-group --git --git-repos -T -L 2'
-alias lt='eza -lab --icons=auto --group-directories-first --smart-group --git --git-repos -T -L 3'
+eza_base() {
+  setopt local_options GLOB_DOTS NULL_GLOB
+  eza --icons=auto --group-directories-first --smart-group --git "$@"
+}
+
+l()    { eza_base -la "$@"; }
+lt()   { eza_base -la -T -L 2 "$@"; }
+ltt()  { eza_base -la -T -L 3 "$@"; }
+
+lh()   { eza_base -lb "$@"; }
+lht()  { eza_base -lb -T -L 2 "$@"; }
+lhtt() { eza_base -lb -T -L 3 "$@"; }
+
+lH()   { eza_base -lb --git-ignore "$@"; }
+lHt()  { eza_base -lb -T -L 2 --git-ignore "$@"; }
+lHtt() { eza_base -lb -T -L 3 --git-ignore "$@"; }
+
+li()   { eza_base -la --git-ignore "$@"; }
+lit()  { eza_base -la -T -L 2 --git-ignore "$@"; }
+litt() { eza_base -la -T -L 3 --git-ignore "$@"; }
+
+
 export EDITOR='nvim'
 # alias nap="EDITOR=nvim nap"
 alias checkout='fzf-git-checkout && g pull'
@@ -116,8 +140,6 @@ eval "$(pyenv init -)"
 export NAP_CONFIG="~/.nap/config.yaml"
 export NAP_HOME="~/.nap"
 
-unalias gg 2>/dev/null
-unalias gl 2>/dev/null
 
 mr-create() {
   local target_branch mr_output mr_url
@@ -604,7 +626,9 @@ ci-trace() {
     ' | bat --pager="less -FR +G"
 }
 
-alias dsf='diff-so-fancy'
+dsf() {
+    diff -u "$@" | diff-so-fancy
+  }
 
 gl() {
     if [[ $# -eq 0 ]]; then
@@ -636,3 +660,5 @@ view-jira() {
     printf "%s" "$url" | pbcopy
     open "$url"
   }
+
+alias cd-downloads='cd ~/Downloads'

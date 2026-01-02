@@ -16,6 +16,7 @@ return {
     -- },
     auto_close = true,
     auto_preview = true,
+    follow = true,
     auto_refresh = false,
     focus = true,
     win = {
