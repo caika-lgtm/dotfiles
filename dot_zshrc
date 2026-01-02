@@ -3,18 +3,18 @@ export FZF_BASE=/usr/local/bin/fzf
 ZSH_THEME=""
 COMPLETION_WAITING_DOTS="true"
 zvm_config() {
-  ZVM_INSERT_MODE_CURSOR=$ZVM_CURSOR_BLINKING_UNDERLINE
+    ZVM_INSERT_MODE_CURSOR=$ZVM_CURSOR_BLINKING_UNDERLINE
 }
 plugins=(
-  git
-  branch
-  colored-man-pages
-  colorize
-  zsh-syntax-highlighting
-  zsh-autosuggestions
-  zsh-vi-mode
-  # fzf
-  fzf-zsh-plugin
+    git
+    branch
+    colored-man-pages
+    colorize
+    zsh-syntax-highlighting
+    zsh-autosuggestions
+    zsh-vi-mode
+    # fzf
+    fzf-zsh-plugin
 )
 source $ZSH/oh-my-zsh.sh
 
@@ -29,8 +29,8 @@ unalias l 2>/dev/null
 
 # alias l="ls -la"
 eza_base() {
-  setopt local_options GLOB_DOTS NULL_GLOB
-  eza --icons=auto --group-directories-first --smart-group --git "$@"
+    setopt local_options GLOB_DOTS NULL_GLOB
+    eza --icons=auto --group-directories-first --smart-group --git "$@"
 }
 
 l()    { eza_base -la "$@"; }
@@ -85,7 +85,7 @@ source <(fzf --zsh)
 
 rundev() {
     local container_name="infra-center-dev-container"
-    local workdir="/var/www/infra-center"
+    local workdir = "/var/www/infra-center"
     docker exec -it "$container_name" sh -c "cd $workdir && $*"
 }
 
@@ -103,30 +103,30 @@ devc() {
     local ticket_id=$(echo "$branch_name" | grep -oE '[A-Z]+-[0-9]+')
 
     if [[ -z "$ticket_id" ]]; then
-      echo "😢 No ticket ID found in branch name. Aborting commit."
-      return 1 
+        echo "😢 No ticket ID found in branch name. Aborting commit."
+        return 1
     fi
 
     local formatted_message="$type: [$ticket_id] $message"
     echo "🎉 Committing with message: \"$formatted_message\""
     # rundev git commit --verbose -m "'$formatted_message'"
     git commit --verbose -m "$formatted_message"
-  }
+}
 
 cfeat() {
-  devc "feat" "$1"
+    devc "feat" "$1"
 }
 
 cfix() {
-  devc "fix" "$1"
+    devc "fix" "$1"
 }
 
 cchore() {
-  devc "chore" "$1"
+    devc "chore" "$1"
 }
 
 crefactor() {
-  devc "refactor" "$1"
+    devc "refactor" "$1"
 }
 
 # alias gca='rundev git commit --verbose --all --date=now --no-edit --amend'
@@ -140,22 +140,22 @@ alias vim='nvim'
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init --path)"
-eval "$(pyenv init -)" 
+eval "$(pyenv init -)"
 
 export NAP_CONFIG="~/.nap/config.yaml"
 export NAP_HOME="~/.nap"
 
 
 mr-create() {
-  local target_branch mr_output mr_url
+    local target_branch mr_output mr_url
 
-  target_branch=$(
-    git branch --format='%(refname:short)' \
-      | fzf --prompt="Target branch > "  --height=40% --layout=reverse --border
+    target_branch=$(
+        git branch --format='%(refname:short)' \
+            | fzf --prompt="Target branch > "  --height=40% --layout=reverse --border
     )
     if [[ -z "$target_branch" ]]; then
-      echo "No target branch selected."
-      return 1
+        echo "No target branch selected."
+        return 1
     fi
 
     mr_output=$(glab mr create -a @me -f -l "ReadyForReview 👀" -b "$target_branch")
@@ -163,55 +163,55 @@ mr-create() {
 
     mr_url=$(echo "$mr_output" | rg -o 'https?://[^ ]+/merge_requests/[0-9]+' | tail -n 1)
     if [[ -n "$mr_url" ]]; then
-      echo -n "$mr_url" | pbcopy
-      echo "MR URL copied to clipboard."
+        echo -n "$mr_url" | pbcopy
+        echo "MR URL copied to clipboard."
     else
-      echo "MR URL not found in output."
-      return 1
+        echo "MR URL not found in output."
+        return 1
     fi
 }
 
 
 mr-view() {
-  glab mr view "${1:-$(g branch --show-current)}" -w
+    glab mr view "${1:-$(g branch --show-current)}" -w
 }
 
 mr-rebase() {
-  local branch
-  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
-  if [[ -z "$branch" || "$branch" == "HEAD" ]]; then
-    echo "mr_rebase: not on a branch" >&2
-    return 1
-  fi
-  glab mr rebase "$branch"
+    local branch
+    branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
+    if [[ -z "$branch" || "$branch" == "HEAD" ]]; then
+        echo "mr_rebase: not on a branch" >&2
+        return 1
+    fi
+    glab mr rebase "$branch"
 }
 
 mr-target() {
-  local current_branch target_branch
-  current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
-  if [[ -z "$current_branch" || "$current_branch" == "HEAD" ]]; then
-    echo "mr_target: not on a branch" >&2
-    return 1
-  fi
+    local current_branch target_branch
+    current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
+    if [[ -z "$current_branch" || "$current_branch" == "HEAD" ]]; then
+        echo "mr_target: not on a branch" >&2
+        return 1
+    fi
 
-  target_branch="$(
+    target_branch="$(
     git for-each-ref --format='%(refname:short)' refs/heads/ \
       | fzf --prompt="Target branch > " --height=40% --layout=reverse --border
   )" || return 1
 
-  if [[ -z "$target_branch" ]]; then
-    echo "mr_target: no target branch selected" >&2
-    return 1
-  fi
+    if [[ -z "$target_branch" ]]; then
+        echo "mr_target: no target branch selected" >&2
+        return 1
+    fi
 
-  glab mr update "$current_branch" --target-branch "$target_branch"
+    glab mr update "$current_branch" --target-branch "$target_branch"
 }
 
 ci-status-short() {
     local branch="$1"
     if [[ -z "$branch" ]]; then
-      echo "usage: ci-status-short <branch>"
-      return 1
+        echo "usage: ci-status-short <branch>"
+        return 1
     fi
 
     local output pipe_status stages red reset
@@ -219,14 +219,14 @@ ci-status-short() {
     reset=$'\e[0m'
 
     output="$(glab ci get -b "$branch" -d 2>/dev/null)" || {
-      echo "🔍"
-      return 1
+        echo "🔍"
+        return 1
     }
 
     pipe_status="$(printf "%s\n" "$output" | awk -F: '/^status:/ {gsub(/^[ \t]+/, "", $2); print $2; exit}')"
 
     if [[ "$pipe_status" == "failed" ]]; then
-      stages=("${(@f)$(printf "%s\n" "$output" \
+        stages=("${(@f)$(printf "%s\n" "$output" \
         | awk '
             BEGIN {in_jobs=0}
             /^# Jobs:/ {in_jobs=1; next}
@@ -250,35 +250,35 @@ ci-status-short() {
         | awk '!seen[$0]++'
       )}")
 
-    if (( ${#stages[@]} > 0 )); then
-      echo "${red}👎 (${(j:, :)stages})${reset}"
-    else
-      echo "${red}👎${reset}"
-    fi
+        if (( ${#stages[@]} > 0 )); then
+            echo "${red}👎 (${(j:, :)stages})${reset}"
+        else
+            echo "${red}👎${reset}"
+        fi
     elif [[ "$pipe_status" == "success" ]]; then
-      echo "🎉"
+        echo "🎉"
     elif [[ "$pipe_status" == "pending" ]]; then
-      echo "🙏"
+        echo "🙏"
     elif [[ "$pipe_status" == "running" ]]; then
-      echo "🏃"
+        echo "🏃"
     elif [[ "$pipe_status" == "canceled" ]]; then
-      echo "🚫"
+        echo "🚫"
     elif [[ "$pipe_status" == "skipped" ]]; then
-      echo "⏭️"
+        echo "⏭️"
     elif [[ "$pipe_status" == "created" ]]; then
-      echo "🚧"
+        echo "🚧"
     elif [[ "$pipe_status" == "manual" ]]; then
-      echo "📝"
+        echo "📝"
     elif [[ "$pipe_status" == "waiting_for_resource" ]]; then
-      echo "💤"
+        echo "💤"
     elif [[ "$pipe_status" == "preparing" ]]; then
-      echo "⏳"
+        echo "⏳"
     elif [[ "$pipe_status" == "scheduled" ]]; then
-      echo "📅"
+        echo "📅"
     else
-      echo "❓"
+        echo "❓"
     fi
-  }
+}
 
 mrs() {
     local jq_filter
@@ -301,7 +301,7 @@ mrs() {
         )
       ] | @tsv
     '
-      local awk_fmt
+    local awk_fmt
     awk_fmt='
       function strip_ansi(s, t) {
         t = s
@@ -386,40 +386,40 @@ mrs() {
     local -a args=()
     local all=0
     for arg in "$@"; do
-      if [[ $arg == -A ]]; then
-        all=1
-      else
-        args+=("$arg")
-      fi
+        if [[ $arg == -A ]]; then
+            all=1
+        else
+            args+=("$arg")
+        fi
     done
 
     if (( all )); then
-      jq -s '.[0] + .[1]' \
-        <(glab mr list --author @me -F json -o updated_at -S desc "${args[@]}") \
-        <(glab mr list --author @me -F json -o updated_at -S desc -M -P 10 "${args[@]}") \
-      | jq -r "$jq_filter" \
-      | {
-          while IFS=$'\t' read -r iid src tgt label merge_status state updated; do
-            pipe=$(ci-status-short "$src")
-            printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-              "$iid" "$src" "$tgt" "$label" "$merge_status" "$state" "$pipe" "$updated"
-          done
+        jq -s '.[0] + .[1]' \
+            <(glab mr list --author @me -F json -o updated_at -S desc "${args[@]}") \
+            <(glab mr list --author @me -F json -o updated_at -S desc -M -P 10 "${args[@]}") \
+            | jq -r "$jq_filter" \
+            | {
+            while IFS=$'\t' read -r iid src tgt label merge_status state updated; do
+                pipe=$(ci-status-short "$src")
+                printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+                    "$iid" "$src" "$tgt" "$label" "$merge_status" "$state" "$pipe" "$updated"
+            done
         } | awk -F $'\t' "$awk_fmt"
     else
-      glab mr list --author @me -F json -o updated_at -S desc "${args[@]}" \
-      | jq -r "$jq_filter" \
-      | {
-          while IFS=$'\t' read -r iid src tgt label merge_status state updated; do
-            pipe=$(ci-status-short "$src")
-            printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-              "$iid" "$src" "$tgt" "$label" "$merge_status" "$state" "$pipe" "$updated"
-          done
+        glab mr list --author @me -F json -o updated_at -S desc "${args[@]}" \
+            | jq -r "$jq_filter" \
+            | {
+            while IFS=$'\t' read -r iid src tgt label merge_status state updated; do
+                pipe=$(ci-status-short "$src")
+                printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+                    "$iid" "$src" "$tgt" "$label" "$merge_status" "$state" "$pipe" "$updated"
+            done
         } | awk -F $'\t' "$awk_fmt"
     fi
-  }
+}
 
 _ci_status_parse() {
-  jq -r '
+    jq -r '
   def dur(s):
   if s == null then ""
   else
@@ -451,7 +451,7 @@ end;
 }
 
 _ci_status_format_line() {
-  jq -r '
+    jq -r '
   def status_emoji(s):
   if s == "failed" then "😞"
   elif s == "success" then "🎉"
@@ -487,46 +487,46 @@ else
 
     "Pipeline \(.pipeline_id) \(.pipeline_status) \(status_emoji(.pipeline_status)) triggered by @\(.user_username) for \(commit_short)\(finished_label(.finished_at))."
     '
-  }
+}
 
 _ci_status_colorize() {
-  local line
-  while IFS= read -r line; do
-    if [[ $line =~ '^Pipeline ([0-9]+) ([^ ]+) ([^ ]+) triggered by @([^ ]+) for ([^ ]+)( finished at (.+))?\.$' ]]; then
-      local id="${match[1]}"
-      local status_text="${match[2]}"
-      local emoji="${match[3]}"
-      local user="${match[4]}"
-      local sha="${match[5]}"
-      local finished="${match[7]}"
+    local line
+    while IFS= read -r line; do
+        if [[ $line =~ '^Pipeline ([0-9]+) ([^ ]+) ([^ ]+) triggered by @([^ ]+) for ([^ ]+)( finished at (.+))?\.$' ]]; then
+            local id="${match[1]}"
+            local status_text="${match[2]}"
+            local emoji="${match[3]}"
+            local user="${match[4]}"
+            local sha="${match[5]}"
+            local finished="${match[7]}"
 
-      local purple='%F{magenta}'
-      local highlight='%F{yellow}'
-      local reset='%f'
+            local purple='%F{magenta}'
+            local highlight='%F{yellow}'
+            local reset='%f'
 
-      local status_color
-      case "$status_text" in
-        success) status_color='%F{green}' ;;
-        failed) status_color='%F{red}' ;;
-        *) status_color='%F{yellow}' ;;
-      esac
+            local status_color
+            case "$status_text" in
+                success) status_color='%F{green}' ;;
+                failed) status_color='%F{red}' ;;
+                *) status_color='%F{yellow}' ;;
+            esac
 
-      local out="Pipeline ${purple}${id}${reset} ${status_color}${status_text}${reset} ${emoji} (triggered by @${highlight}${user}${reset} for ${highlight}${sha}${reset}"
-      if [[ -n "$finished" ]]; then
-        out+=" finished at ${highlight}${finished}${reset})"
-      else
-        out+=")"
-      fi
+            local out="Pipeline ${purple}${id}${reset} ${status_color}${status_text}${reset} ${emoji} (triggered by @${highlight}${user}${reset} for ${highlight}${sha}${reset}"
+            if [[ -n "$finished" ]]; then
+                out+=" finished at ${highlight}${finished}${reset})"
+            else
+                out+=")"
+            fi
 
-      print -P -- "$out"
-    else
-      print -r -- "$line"
-    fi
-  done
+            print -P -- "$out"
+        else
+            print -r -- "$line"
+        fi
+    done
 }
 
 _ci_status_jobs_table_pretty() {
-  jq -r '
+    jq -r '
   def status_text(j):
   if j.job_status == "skipped" then "skipped"
   elif j.job_status == "success" then "success in \((j.job_duration // ""))"
@@ -563,19 +563,19 @@ _ci_status_jobs_table_pretty() {
 }
 
 _ci_status_for_branch() {
-  local branch="$1"
-  [[ -n "$branch" ]] || return 1
+    local branch="$1"
+    [[ -n "$branch" ]] || return 1
 
-  print -P -- "Showing CI status for branch %F{magenta}$branch%f"
+    print -P -- "Showing CI status for branch %F{magenta}$branch%f"
 
-  local json
-  json="$(glab ci get -d -F json -b "$branch")" || return 1
+    local json
+    json="$(glab ci get -d -F json -b "$branch")" || return 1
 
-  print -r -- "$json" | _ci_status_parse | _ci_status_format_line | _ci_status_colorize
-  print -r -- "$json" | _ci_status_parse | _ci_status_jobs_table_pretty
+    print -r -- "$json" | _ci_status_parse | _ci_status_format_line | _ci_status_colorize
+    print -r -- "$json" | _ci_status_parse | _ci_status_jobs_table_pretty
 
-  local failed_job_id
-  failed_job_id="$(
+    local failed_job_id
+    failed_job_id="$(
     print -r -- "$json" \
       | _ci_status_parse \
       | jq -r '.jobs[] | select(.job_status=="failed") | .job_id' \
@@ -583,21 +583,21 @@ _ci_status_for_branch() {
     )"
 
     if [[ -n "$failed_job_id" ]]; then
-      print -n -- "$failed_job_id" | pbcopy
-      print -P -- "\n%F{yellow}Copied failed job id to clipboard:%f %F{magenta}$failed_job_id%f"
+        print -n -- "$failed_job_id" | pbcopy
+        print -P -- "\n%F{yellow}Copied failed job id to clipboard:%f %F{magenta}$failed_job_id%f"
     fi
-  }
+}
 
 
 ci-status() {
-  local branch
-  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
-  _ci_status_for_branch "$branch"
+    local branch
+    branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || return 1
+    _ci_status_for_branch "$branch"
 }
 
 ci-status-for() {
-  local branch
-  branch="$(
+    local branch
+    branch="$(
     git for-each-ref --format='%(refname:short)' refs/heads refs/remotes \
       | sed 's#^origin/##' \
       | grep -v '^origin/HEAD$' \
@@ -605,13 +605,13 @@ ci-status-for() {
       | fzf --prompt='Branch > ' --height=40% --layout=reverse --border
     )" || return 1
     _ci_status_for_branch "$branch"
-  }
+}
 
 ci-trace() {
-  local job_id="$1"
-  [[ -n "$job_id" ]] || { print -r -- "usage: ci_trace <job_id>"; return 1; }
+    local job_id="$1"
+    [[ -n "$job_id" ]] || { print -r -- "usage: ci_trace <job_id>"; return 1; }
 
-  glab ci trace "$job_id" \
+    glab ci trace "$job_id" \
     | awk -v gray="\033[90m" -v reset="\033[0m" '
   {
     line = $0
@@ -633,44 +633,115 @@ ci-trace() {
 
 dsf() {
     diff -u "$@" | diff-so-fancy
-  }
+}
 
 gl() {
     if [[ $# -eq 0 ]]; then
-      git log --color=always --pretty=format:'%s%n%C(red)%h%C(reset) %C(auto)%d%C(reset)%n' -10
+        git log --color=always --pretty=format:'%s%n%C(red)%h%C(reset) %C(auto)%d%C(reset)%n' -10
     else
-      git log --color=always --pretty=format:'%s%n%C(red)%h%C(reset) %C(auto)%d%C(reset)%n' "$@"
+        git log --color=always --pretty=format:'%s%n%C(red)%h%C(reset) %C(auto)%d%C(reset)%n' "$@"
     fi
-  }
+}
 
 view-commit() {
     local sha="$1"
     if [[ -z "$sha" ]]; then
-      echo "usage: view_commit <sha>"
-      return 1
+        echo "usage: view_commit <sha>"
+        return 1
     fi
     local url="https://git.insea.io/harbor.insea.io/seaweb/infracenter-be/-/commits/${sha}"
     printf "%s" "$url" | pbcopy
     open "$url"
-  }
+}
 
 view-jira() {
     local id="$1"
     if [[ -z "$id" ]]; then
-      echo "usage: view-jira <ticket id>"
-      return 1
+        echo "usage: view-jira <ticket id>"
+        return 1
     fi
     id="${id#MIS-}"
     local url="https://jira.garenanow.com/browse/MIS-${id}"
     printf "%s" "$url" | pbcopy
     open "$url"
-  }
+}
 
 alias cd-downloads='cd ~/Downloads'
 
 test() {
-  local filename="$1"
-  shift
-  local keywords="$*"
-  rundev "poetry run pytest ${filename} -k ${keywords} -vv"
+    local filename="$1"
+    shift
+    local keywords="$*"
+    rundev "poetry run pytest ${filename} -k ${keywords} -vv"
 }
+
+export JIRA_API_TOKEN="$(security find-generic-password -a "$USER" -s JIRA_API_TOKEN -w)"
+export JIRA_AUTH_TYPE=bearer
+
+# json="$(jira issue list --raw -q "fixVersion ~ 'infracenter*'" 2>/dev/null)" || {
+
+# fzf search Jira issues (key/summary/description/type/assignee/fixVersions) with preview
+# Requires: jq, fzf
+# Usage:
+#   jfz "initial search"         # optional initial query for fzf
+#   jira issue view "$(jfz)"
+#   open "https://jira.garenanow.com/browse/$(jfz)"
+jfz() {
+    local initial="${1:-}"
+
+    # Temp file to hold sanitized JSON for fast previews
+    local tmp
+    tmp="$(mktemp -t jira_issues.XXXXXX)" || return 1
+    trap 'rm -f "$tmp"' EXIT INT TERM
+
+    # Fetch once, sanitize control chars (0x00-0x1F excluding \t \n \r), write to file
+    jira issue list --raw -q "fixVersion ~ 'infracenter*'" 2>/dev/null \
+        | perl -pe 's/[\x00-\x08\x0B\x0C\x0E-\x1F]//g' \
+        > "$tmp" || { echo "Failed to fetch issues (check auth/JQL)."; return 1; }
+
+    # Verify it's a JSON array
+    jq -e 'type=="array"' "$tmp" >/dev/null 2>&1 || {
+        echo "Unexpected output (not a JSON array)."
+        return 1
+    }
+
+    # Build TSV rows for fzf: key, status, type, assignee, fixVersions, summary, desc-snippet
+    local selected_key
+    selected_key="$(
+    jq -r '
+      .[]
+      | [
+          .key,
+          (.fields.summary // ""),
+          (.fields.status.name // ""),
+          (.fields.assignee.displayName // "Unassigned"),
+          (.fields.issueType.name // ""),
+          ((.fields.fixVersions // []) | map(.name) | join("; ")),
+          ((.fields.description // "") | tostring | gsub("[\r\n\t]+";" ") | .[0:200])
+        ]
+      | @tsv
+    ' "$tmp" \
+    | fzf --height 90% --reverse --cycle \
+          --prompt='jira> ' \
+          ${initial:+--query="$initial"} \
+          --delimiter=$'\t' --with-nth=1,2,3,4,5,6 \
+          --preview-window=right:40%:wrap \
+          --preview "
+    k=\$(printf '%s' {} | cut -f1)
+    jq -r --arg k \"\$k\" '
+              .[] | select(.key==\$k)
+              | \"\(.key)  [\(.fields.status.name // \"\")]  \(.fields.issueType.name // \"\")\n\"
+                + \"Assignee: \(.fields.assignee.displayName // \"Unassigned\")\n\"
+                + \"FixVersion: \(((.fields.fixVersions // []) | map(.name) | join(\", \")) // \"\")\n\"
+                + \"Priority: \(.fields.priority.name // \"\")\n\"
+                + \"Updated: \(.fields.updated // \"\")\n\"
+                + \"\nSummary:\n\(.fields.summary // \"\")\n\"
+                + \"\nDescription:\n\((.fields.description // \"\") | tostring)\n\"
+            ' '$tmp' 2>/dev/null || jira issue view \"\$k\" 2>/dev/null
+    " \
+    | cut -f1
+  )"
+
+    [[ -n "$selected_key" ]] && printf '%s\n' "$selected_key"
+}
+

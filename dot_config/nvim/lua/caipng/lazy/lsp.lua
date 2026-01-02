@@ -14,6 +14,19 @@ return {
     "onsails/lspkind.nvim",
   },
   config = function()
+    require("fidget").setup({})
+    require("mason").setup()
+    require("mason-lspconfig").setup({
+      ensure_installed = {
+        "ts_ls",
+        "lua_ls",
+        "marksman",
+        "basedpyright",
+        "taplo",
+        "bashls",
+      },
+    })
+
     local cmp_lsp = require("cmp_nvim_lsp")
     local capabilities = vim.tbl_deep_extend(
       "force",
@@ -21,65 +34,50 @@ return {
       vim.lsp.protocol.make_client_capabilities(),
       cmp_lsp.default_capabilities()
     )
-    local util = require("lspconfig.util")
+    vim.lsp.config("*", {
+      capabilities = capabilities,
+    })
 
-    require("fidget").setup({})
-    require("mason").setup()
+    vim.lsp.config("bashls", {
+      filetypes = { "sh", "zsh", "zshrc", "bash", "bashrc" },
+    })
 
-    require('mason-lspconfig').setup({
-      ensure_installed = {
-        "ts_ls",
-        "lua_ls",
-        "ruff",
-        "marksman",
-        "basedpyright",
-        "taplo",
-        "bashls",
+    vim.lsp.config("ruff", {
+      root_dir = function(bufnr, on_dir)
+        local name = vim.api.nvim_buf_get_name(bufnr)
+        if name:match("^diffview://") then
+          return
+        end
+        local root = vim.fs.root(name, {
+          "pyproject.toml",
+          "ruff.toml",
+          ".ruff.toml",
+          "setup.cfg",
+          "tox.ini",
+          ".git",
+        })
+        on_dir(root or vim.fn.getcwd())
+      end,
+    })
+
+    vim.lsp.config("lua_ls", {
+      settings = {
+        Lua = {
+          runtime = { version = "LuaJIT" },
+          diagnostics = { globals = { "vim", "love" } },
+          workspace = { library = { vim.env.VIMRUNTIME } },
+        },
       },
-      handlers = {
-        function(server_name)
-          require('lspconfig')[server_name].setup({
-            capabilities = capabilities,
-          })
-        end,
-        basedpyright = function()
-          require('lspconfig').basedpyright.setup({
-            capabilities = capabilities,
-          })
-        end,
-        bashls = function()
-          require('lspconfig').bashls.setup({
-            capabilities = capabilities,
-            filetypes = { "sh", "zsh" },
-          })
-        end,
-        lua_ls = function()
-          require('lspconfig').lua_ls.setup({
-            capabilities = capabilities,
-            settings = {
-              Lua = {
-                runtime = {
-                  version = 'LuaJIT'
-                },
-                diagnostics = {
-                  globals = { 'vim', 'love' },
-                },
-                workspace = {
-                  library = {
-                    vim.env.VIMRUNTIME,
-                  }
-                }
-              }
-            }
-          })
-        end,
-        ruff = function()
-          require("lspconfig").ruff.setup({
-            capabilities = capabilities,
-            root_dir = util.root_pattern("pyproject.toml", "ruff.toml", ".git"),
-          })
-        end,
-      }
+    })
+
+    vim.lsp.enable({
+      "ts_ls",
+      "lua_ls",
+      "ruff",
+      "marksman",
+      "basedpyright",
+      "taplo",
+      "bashls",
     })
 
     local cmp = require('cmp')

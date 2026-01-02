@@ -24,20 +24,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
       { "<leader>lw", vim.lsp.buf.workspace_symbol, desc = "Workspace symbol" },
       { "<leader>ld", vim.diagnostic.open_float,    desc = "Open diagnostic float" },
     }, wk_opts)
-
-    -- Format on save (per-buffer, per-client)
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      buffer = event.buf,
-      callback = function()
-        vim.lsp.buf.format({ async = false, id = event.data.client_id })
-      end,
-    })
   end,
 })
 
 -- Global / non-LSP mappings
 which_key.add({
-  { "<leader>b", '<cmd>b#<CR>',                             desc = "Go to previous buffer" },
+  { "<leader>B", '<cmd>b#<CR>',                             desc = "Go to previous buffer" },
   { "<leader>p", '"_dP',                                    desc = "Paste without overwrite" },
   { "<leader>/", "<Plug>(comment_toggle_linewise_current)", desc = "Toggle comment" },
   {

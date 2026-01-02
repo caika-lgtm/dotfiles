@@ -6,17 +6,17 @@ return {
     formatters_by_ft = {
       markdown = { "prettierd" },
       python = {
-        "ruff_fix",        -- To fix auto-fixable lint errors (e.g., organize imports)
-        "ruff_format",     -- To run the Ruff formatter
+        "ruff_organize_imports",
+        "ruff_fix",
+        "ruff_format",
       },
+      zsh = { "beautysh" },
+      zshrc = { "beautysh" },
+      bash = { "beautysh" },
+      bashrc = { "beautysh" },
     },
-    -- Set default options
-    default_format_ops = {
+    format_after_save = {
       lsp_format = "fallback",
-    },
-    -- Set up format-on-save
-    format_on_save = {
-      timeout_ms = 500
     }
   }
 }
