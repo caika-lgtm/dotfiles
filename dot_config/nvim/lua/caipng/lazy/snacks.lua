@@ -25,7 +25,7 @@ return {
         --   height = 5,
         --   padding = 1,
         -- },
-        { pane = 2, section = "terminal", cmd = "fortune -s -n 128 | cowsay", padding = 1, random = 100 },
+        { pane = 2, section = "terminal", cmd = "fortune -s -n 128 | cowsay | lolcat", padding = 1, random = 100 },
         { section = "keys", gap = 1, padding = 1 },
         { pane = 2, icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
         { pane = 2, icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
