@@ -19,6 +19,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
       -- LSP group
       { "<leader>l",  group = "LSP" },
       { "<leader>la", vim.lsp.buf.code_action,      desc = "Code action" },
+      { "<leader>i",  vim.lsp.buf.code_action,      desc = "Code action" },
       { "<leader>lr", vim.lsp.buf.references,       desc = "References" },
       { "<leader>ln", vim.lsp.buf.rename,           desc = "Rename" },
       { "<leader>lw", vim.lsp.buf.workspace_symbol, desc = "Workspace symbol" },
@@ -183,17 +184,17 @@ which_key.add({
 -- from LazyVim
 which_key.add({
   { "j",         "v:count == 0 ? 'gj' : 'j'",   desc = "Down",                   expr = true,                  silent = true,      mode = { "n", "x" } },
-  { "<Down>",    "v:count == 0 ? 'gj' : 'j'",   desc = "Down",                   expr = true,                  silent = true,      mode = { "n", "x" } },
+  -- { "<Down>",    "v:count == 0 ? 'gj' : 'j'",   desc = "Down",                   expr = true,                  silent = true,      mode = { "n", "x" } },
   { "k",         "v:count == 0 ? 'gk' : 'k'",   desc = "Up",                     expr = true,                  silent = true,      mode = { "n", "x" } },
-  { "<Up>",      "v:count == 0 ? 'gk' : 'k'",   desc = "Up",                     expr = true,                  silent = true,      mode = { "n", "x" } },
+  -- { "<Up>",      "v:count == 0 ? 'gk' : 'k'",   desc = "Up",                     expr = true,                  silent = true,      mode = { "n", "x" } },
 
-  { "<C-h>",     "<C-w>h",                      desc = "Go to Left Window",      remap = true,                 mode = "n" },
+  -- { "<C-h>",     "<C-w>h",                      desc = "Go to Left Window",      remap = true,                 mode = "n" },
   { "<Left>",    "<C-w>h",                      desc = "Go to Left Window",      remap = true,                 mode = "n" },
-  { "<C-j>",     "<C-w>j",                      desc = "Go to Lower Window",     remap = true,                 mode = "n" },
+  -- { "<C-j>",     "<C-w>j",                      desc = "Go to Lower Window",     remap = true,                 mode = "n" },
   { "<Down>",    "<C-w>j",                      desc = "Go to Lower Window",     remap = true,                 mode = "n" },
-  { "<C-k>",     "<C-w>k",                      desc = "Go to Upper Window",     remap = true,                 mode = "n" },
+  -- { "<C-k>",     "<C-w>k",                      desc = "Go to Upper Window",     remap = true,                 mode = "n" },
   { "<Up>",      "<C-w>k",                      desc = "Go to Upper Window",     remap = true,                 mode = "n" },
-  { "<C-l>",     "<C-w>l",                      desc = "Go to Right Window",     remap = true,                 mode = "n" },
+  -- { "<C-l>",     "<C-w>l",                      desc = "Go to Right Window",     remap = true,                 mode = "n" },
   { "<Right>",   "<C-w>l",                      desc = "Go to Right Window",     remap = true,                 mode = "n" },
 
   { "<M-Down>",  "<cmd>resize +2<cr>",          desc = "Increase Window Height", mode = "n" },

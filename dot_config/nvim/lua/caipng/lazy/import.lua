@@ -8,7 +8,7 @@ return {
   },
   keys = {
     {
-      "<leader>i",
+      "<leader>I",
       function()
         require("import").pick()
       end,
