@@ -679,7 +679,7 @@ test() {
     local filename="$1"
     shift
     local keywords="$*"
-    poetry run pytest ${filename} -k ${keywords} -vv
+    poetry run pytest ${filename} -k ${keywords} -vv --show-capture=all
 }
 
 jira-auth() {

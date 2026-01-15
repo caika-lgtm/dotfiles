@@ -39,25 +39,54 @@ which_key.add({
     desc = "Search and replace word under cursor",
   },
 
-  { "J",     "mzJ`z",                                      desc = "Join lines and keep cursor position" },
-  { "<C-d>", "<C-d>zz",                                    desc = "Half page down and center" },
-  { "<C-u>", "<C-u>zz",                                    desc = "Half page up and center" },
-  { "n",     "nzzzv",                                      desc = "Next search result and center" },
-  { "N",     "Nzzzv",                                      desc = "Previous search result and center" },
-  { "Q",     "<nop>",                                      desc = "Disable Ex mode" },
+  { "J",     "mzJ`z",   desc = "Join lines and keep cursor position" },
+  { "<C-d>", "<C-d>zz", desc = "Half page down and center" },
+  { "<C-u>", "<C-u>zz", desc = "Half page up and center" },
+  { "n",     "nzzzv",   desc = "Next search result and center" },
+  { "N",     "Nzzzv",   desc = "Previous search result and center" },
+  { "Q",     "<nop>",   desc = "Disable Ex mode" },
 
-  { "vs",    '<cmd>vsplit | wincmd p | b# | wincmd p<CR>', desc = "Vertical Split",                     silent = true },
-  { "hs",    '<cmd>split | wincmd p | b# | wincmd p<CR>',  desc = "Horizontal Split",                   silent = true },
-  { "z0",    "<cmd>set foldlevel=0<cr>",                   desc = "Fold all" },
-  { "z1",    "<cmd>set foldlevel=1<cr>",                   desc = "Fold level 1" },
-  { "z2",    "<cmd>set foldlevel=2<cr>",                   desc = "Fold level 2" },
-  { "z3",    "<cmd>set foldlevel=3<cr>",                   desc = "Fold level 3" },
-  { "z4",    "<cmd>set foldlevel=4<cr>",                   desc = "Fold level 4" },
-  { "z5",    "<cmd>set foldlevel=5<cr>",                   desc = "Fold level 5" },
-  { "z6",    "<cmd>set foldlevel=6<cr>",                   desc = "Fold level 6" },
-  { "z7",    "<cmd>set foldlevel=7<cr>",                   desc = "Fold level 7" },
-  { "z8",    "<cmd>set foldlevel=8<cr>",                   desc = "Fold level 8" },
-  { "z9",    "<cmd>set foldlevel=9<cr>",                   desc = "Fold level 9" },
+  {
+    "vs",
+    function()
+      vim.cmd("vsplit")
+      vim.cmd("wincmd p") -- back to original window
+      local alt = vim.fn.bufnr("#")
+      if alt > 0 then
+        pcall(vim.cmd, "b#") -- switch original window to alternate buffer (no error if it fails)
+      end
+      vim.cmd("wincmd p")    -- go to the other split
+    end,
+    desc = "Vertical Split",
+    silent = true,
+  },
+  {
+    "hs",
+    function()
+      vim.cmd("split")
+      vim.cmd("wincmd p")
+      local alt = vim.fn.bufnr("#")
+      if alt > 0 then
+        pcall(vim.cmd, "b#")
+      end
+      vim.cmd("wincmd p")
+    end,
+    desc = "Horizontal Split",
+    silent = true,
+  },
+
+  { "z0", "<cmd>set foldlevel=0<cr>",    desc = "Fold all" },
+  { "z1", "<cmd>set foldlevel=1<cr>",    desc = "Fold level 1" },
+  { "z2", "<cmd>set foldlevel=2<cr>",    desc = "Fold level 2" },
+  { "z3", "<cmd>set foldlevel=3<cr>",    desc = "Fold level 3" },
+  { "z4", "<cmd>set foldlevel=4<cr>",    desc = "Fold level 4" },
+  { "z5", "<cmd>set foldlevel=5<cr>",    desc = "Fold level 5" },
+  { "z6", "<cmd>set foldlevel=6<cr>",    desc = "Fold level 6" },
+  { "z7", "<cmd>set foldlevel=7<cr>",    desc = "Fold level 7" },
+  { "z8", "<cmd>set foldlevel=8<cr>",    desc = "Fold level 8" },
+  { "z9", "<cmd>set foldlevel=9<cr>",    desc = "Fold level 9" },
+
+  { "fp", "<cmd>echo expand('%:p')<CR>", desc = "File Path" },
 })
 
 -- Telescope
@@ -115,17 +144,18 @@ end
 
 -- Git
 which_key.add({
-  { "<leader>g",   group = "[G]it" },
-  { "<leader>gb",  gitsigns_blame_toggle,                         desc = "[b]lame" },
-  { "<leader>gB",  function() Snacks.gitbrowse() end,             desc = "Git Browse",        mode = { "n", "v" } },
-  { "<leader>glb", "<cmd>Gitsigns toggle_current_line_blame<CR>", desc = "[L]ine [B]lame" },
-  { "<leader>gp",  "<cmd>Gitsigns preview_hunk<CR>",              desc = "[P]review hunk" },
-  { "<leader>gr",  "<cmd>Gitsigns reset_hunk<CR>",                desc = "[R]eset hunk" },
-  { "<leader>gh",  "<cmd>Gitsigns nav_hunk next<CR>",             desc = "[H]unk next" },
-  { "<leader>gH",  "<cmd>Gitsigns nav_hunk prev<CR>",             desc = "[H]unk prev" },
-  { "<leader>gfh", "<cmd>DiffviewFileHistory %<CR>",              desc = "[F]ile [H]istory" },
-  { "<leader>gd",  "<cmd>DiffviewOpen<CR>",                       desc = "[D]iff view" },
-  { "<leader>gqf", "<cmd>Gitsigns setqflist all<CR>",             desc = "[Q]uick [F]ix list" },
+  { "<leader>g",  group = "[G]it" },
+  { "<leader>gb", gitsigns_blame_toggle,                         desc = "[b]lame" },
+  { "<leader>gB", function() Snacks.gitbrowse() end,             desc = "Git Browse",      mode = { "n", "v" } },
+  { "<leader>gl", "<cmd>Gitsigns toggle_current_line_blame<CR>", desc = "[L]ine Blame" },
+  { "<leader>gh", "<cmd>Gitsigns preview_hunk<CR>",              desc = "Preview [H]unk" },
+  { "<leader>gr", "<cmd>Gitsigns reset_hunk<CR>",                desc = "[R]eset hunk" },
+  { "<leader>gf", "<cmd>DiffviewFileHistory %<CR>",              desc = "[F]ile History" },
+  { "<leader>gd", "<cmd>DiffviewOpen<CR>",                       desc = "[D]iff view" },
+  { "<leader>gq", "<cmd>Gitsigns setqflist all<CR>",             desc = "[Q]uick fix list" },
+
+  { "[h",         "<cmd>Gitsigns nav_hunk prev<CR>",             desc = "Prev hunk" },
+  { "]h",         "<cmd>Gitsigns nav_hunk next<CR>",             desc = "Next hunk" },
 })
 
 -- Snacks
