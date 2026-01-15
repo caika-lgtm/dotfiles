@@ -117,15 +117,14 @@ end
 which_key.add({
   { "<leader>g",   group = "[G]it" },
   { "<leader>gb",  gitsigns_blame_toggle,                         desc = "[b]lame" },
-  { "<leader>gB",  function() Snacks.gitbrowse() end,             desc = "Git Browse",           mode = { "n", "v" } },
+  { "<leader>gB",  function() Snacks.gitbrowse() end,             desc = "Git Browse",        mode = { "n", "v" } },
   { "<leader>glb", "<cmd>Gitsigns toggle_current_line_blame<CR>", desc = "[L]ine [B]lame" },
   { "<leader>gp",  "<cmd>Gitsigns preview_hunk<CR>",              desc = "[P]review hunk" },
   { "<leader>gr",  "<cmd>Gitsigns reset_hunk<CR>",                desc = "[R]eset hunk" },
   { "<leader>gh",  "<cmd>Gitsigns nav_hunk next<CR>",             desc = "[H]unk next" },
   { "<leader>gH",  "<cmd>Gitsigns nav_hunk prev<CR>",             desc = "[H]unk prev" },
   { "<leader>gfh", "<cmd>DiffviewFileHistory %<CR>",              desc = "[F]ile [H]istory" },
-  { "<leader>gdv", "<cmd>DiffviewOpen<CR>",                       desc = "[D]iff [V]iew" },
-  { "<leader>gdr", "<cmd>DiffviewRefresh<CR>",                    desc = "[D]iff view [R]efresh" },
+  { "<leader>dv",  "<cmd>DiffviewOpen<CR>",                       desc = "[D]iff [V]iew" },
   { "<leader>gqf", "<cmd>Gitsigns setqflist all<CR>",             desc = "[Q]uick [F]ix list" },
 })
 
