@@ -124,7 +124,7 @@ which_key.add({
   { "<leader>gh",  "<cmd>Gitsigns nav_hunk next<CR>",             desc = "[H]unk next" },
   { "<leader>gH",  "<cmd>Gitsigns nav_hunk prev<CR>",             desc = "[H]unk prev" },
   { "<leader>gfh", "<cmd>DiffviewFileHistory %<CR>",              desc = "[F]ile [H]istory" },
-  { "<leader>dv",  "<cmd>DiffviewOpen<CR>",                       desc = "[D]iff [V]iew" },
+  { "<leader>gd",  "<cmd>DiffviewOpen<CR>",                       desc = "[D]iff view" },
   { "<leader>gqf", "<cmd>Gitsigns setqflist all<CR>",             desc = "[Q]uick [F]ix list" },
 })
 
@@ -132,7 +132,8 @@ which_key.add({
 which_key.add({
   { "<leader><space>", function() Snacks.picker.smart() end,                 desc = "Smart Find Files" },
   { "<leader>e",       function() Snacks.explorer() end,                     desc = "File Explorer" },
-  { "<leader>n",       function() Snacks.picker.notifications() end,         desc = "Notification History" },
+  -- { "<leader>n",       function() Snacks.picker.notifications() end,         desc = "Notification History" },
+  { "<leader>n",       "<cmd>NoiceTelescope<CR>",                            desc = "Noice Telescope" },
   { "<leader>:",       function() Snacks.picker.command_history() end,       desc = "Command History" },
   { "<leader>bd",      "<cmd>lua Snacks.bufdelete()<CR>",                    desc = "[B]uffer [D]elete" },
   { "<leader>bo",      "<cmd>lua Snacks.bufdelete.other()<CR>",              desc = "[B]uffer Delete [O]ther" },
