@@ -4,8 +4,9 @@ return {
   config = function()
     require("treesitter-context").setup({
       enable = true,
-      mode = "cursor",
-      max_lines = 0,
+      multiwindow = true,
+      max_lines = 5,
+      mode = "topline",
     })
   end
 }

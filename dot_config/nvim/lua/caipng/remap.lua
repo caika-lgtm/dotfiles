@@ -75,18 +75,19 @@ which_key.add({
     silent = true,
   },
 
-  { "z0", "<cmd>set foldlevel=0<cr>",    desc = "Fold all" },
-  { "z1", "<cmd>set foldlevel=1<cr>",    desc = "Fold level 1" },
-  { "z2", "<cmd>set foldlevel=2<cr>",    desc = "Fold level 2" },
-  { "z3", "<cmd>set foldlevel=3<cr>",    desc = "Fold level 3" },
-  { "z4", "<cmd>set foldlevel=4<cr>",    desc = "Fold level 4" },
-  { "z5", "<cmd>set foldlevel=5<cr>",    desc = "Fold level 5" },
-  { "z6", "<cmd>set foldlevel=6<cr>",    desc = "Fold level 6" },
-  { "z7", "<cmd>set foldlevel=7<cr>",    desc = "Fold level 7" },
-  { "z8", "<cmd>set foldlevel=8<cr>",    desc = "Fold level 8" },
-  { "z9", "<cmd>set foldlevel=9<cr>",    desc = "Fold level 9" },
+  { "z0",         "<cmd>set foldlevel=0<cr>",    desc = "Fold all" },
+  { "z1",         "<cmd>set foldlevel=1<cr>",    desc = "Fold level 1" },
+  { "z2",         "<cmd>set foldlevel=2<cr>",    desc = "Fold level 2" },
+  { "z3",         "<cmd>set foldlevel=3<cr>",    desc = "Fold level 3" },
+  { "z4",         "<cmd>set foldlevel=4<cr>",    desc = "Fold level 4" },
+  { "z5",         "<cmd>set foldlevel=5<cr>",    desc = "Fold level 5" },
+  { "z6",         "<cmd>set foldlevel=6<cr>",    desc = "Fold level 6" },
+  { "z7",         "<cmd>set foldlevel=7<cr>",    desc = "Fold level 7" },
+  { "z8",         "<cmd>set foldlevel=8<cr>",    desc = "Fold level 8" },
+  { "z9",         "<cmd>set foldlevel=9<cr>",    desc = "Fold level 9" },
 
-  { "fp", "<cmd>echo expand('%:p')<CR>", desc = "File Path" },
+  { "fp",         "<cmd>echo expand('%:p')<CR>", desc = "File Path" },
+  { "<Esc><Esc>", "<C-\\><C-n>",                 desc = "Exit Terminal Mode", mode = "t" },
 })
 
 -- Telescope
